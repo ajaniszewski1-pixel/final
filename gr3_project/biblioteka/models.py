@@ -68,6 +68,7 @@ class Osoba(models.Model):
     )
     imie = models.CharField(max_length=50, blank = False, null = False)
     nazwisko = models.CharField(max_length=100, blank = False, null = False)
+    wiek = models.PositiveIntegerField(blank = False, null = False)
     plec = models.IntegerField(choices=PLCIE.choices, default=PLCIE.Inna)
     stanowisko = models.ForeignKey('Stanowisko', on_delete=models.CASCADE)
     data_dodania = models.DateField(auto_now_add=True, editable= False)
