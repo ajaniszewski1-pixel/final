@@ -15,3 +15,4 @@ admin.site.register(Author)
 admin.site.register(Book)
 admin.site.register(Osoba , OsobaAdmin)
 admin.site.register(Stanowisko , StanowiskoAdmin)
+

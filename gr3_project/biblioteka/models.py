@@ -51,6 +51,7 @@ class Book(models.Model):
     author = models.ForeignKey(Author, null=True, blank=True, on_delete=models.SET_NULL)
     genre = models.ForeignKey(Genre, null=True, blank=True, on_delete=models.SET_NULL)
     available_copies = models.PositiveIntegerField(default=1)
+    
 
     def __str__(self):
         return self.title
@@ -77,7 +78,7 @@ class Osoba(models.Model):
         return f"Osoba: {self.imie} {self.nazwisko}"
     
     class Meta:
-        ordering = ['nazwisko']
+        ordering = ['nazwisko','imie']
     
 class Stanowisko(models.Model):
     nazwa = models.CharField(max_length=70, blank = False, null = False)
