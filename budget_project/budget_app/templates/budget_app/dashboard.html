@@ -33,56 +33,44 @@
             font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px;
         }
 
-        /* GÓRA: Poprawione proporcje - Budżet mniejszy, Liczniki szersze */
-        .top-row { 
-            display: grid; 
-            grid-template-columns: 160px 1fr 1fr 1fr; /* 160px dla budżetu, reszta równo */
-            gap: 12px; 
-            height: 70px; 
-            flex-shrink: 0; 
-        }
-        
+        /* GÓRA */
+        .top-row { display: grid; grid-template-columns: 160px 1fr 1fr 1fr; gap: 12px; height: 70px; flex-shrink: 0; }
         .budget-table { width: 100%; height: 100%; border-collapse: collapse; font-size: 11px; }
         .budget-table td { border: 1px solid var(--border-color); padding: 2px 6px; }
-        
-        .stat-val { 
-            display: flex; 
-            align-items: center; 
-            justify-content: center; 
-            height: 100%; 
-            font-size: 22px; /* Trochę większa czcionka dla czytelności */
-            font-weight: bold; 
-            padding: 0 5px;
-        }
+        .stat-val { display: flex; align-items: center; justify-content: center; height: 100%; font-size: 22px; font-weight: bold; }
 
         /* FORMULARZ */
         .input-row { height: 115px; flex-shrink: 0; border: 1px solid var(--sheet-green); }
         .sheet-table { width: 100%; border-collapse: collapse; font-size: 13px; table-layout: fixed; }
         .sheet-table th { background: var(--light-green); border: 1px solid var(--border-color); padding: 8px; color: var(--sheet-green); }
-        .input-field { 
-            width: 100%; border: none; padding: 12px 8px; font-size: 14px; 
-            background: transparent; outline: none; font-weight: 500;
-        }
+        .input-field { width: 100%; border: none; padding: 12px 8px; font-size: 14px; background: transparent; outline: none; font-weight: 500; }
         .input-field:focus { background-color: #fff9c4; } 
         
         .btn-save { 
             background: var(--sheet-green); color: white; border: none; 
             padding: 10px 25px; cursor: pointer; border-radius: 4px; 
-            font-weight: bold; font-size: 13px; transition: background 0.2s;
-            white-space: nowrap;
+            font-weight: bold; font-size: 13px; white-space: nowrap;
         }
-        .btn-save:hover { background: #0e5a3d; }
 
         /* ŚRODEK */
         .middle-row { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; flex: 1; min-height: 0; }
         .scroll-area { overflow-y: auto; height: 100%; }
-
         .data-table { width: 100%; border-collapse: collapse; font-size: 12px; table-layout: fixed; }
         .data-table td { border-bottom: 1px solid var(--border-color); padding: 8px; word-wrap: break-word; }
         .val-black { text-align: right; font-weight: 600; color: var(--text-dark); }
 
         /* DÓŁ */
         .charts-row { display: grid; grid-template-columns: 1.5fr 1fr; gap: 12px; height: 180px; flex-shrink: 0; }
+
+/* TWOJA NOWA DOPISKA: */
+        input::-webkit-outer-spin-button,
+        input::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+        }
+        input[type=number] {
+        -moz-appearance: textfield;
+        }
     </style>
 </head>
 <body>
@@ -95,39 +83,30 @@
                 <tr><td style="background:var(--light-green)">Rok</td><td style="text-align:center; font-weight:bold">2026</td></tr>
             </table>
         </div>
-        <div class="card">
-            <div class="section-header">💰 Przychody</div>
-            <div class="stat-val" style="color:var(--income-blue)">{{ suma_przychodow|floatformat:2 }} zł</div>
-        </div>
-        <div class="card">
-            <div class="section-header">📉 Wydatki</div>
-            <div class="stat-val" style="color:var(--expense-red)">{{ suma_wydatkow|floatformat:2|cut:"-" }} zł</div>
-        </div>
-        <div class="card">
-            <div class="section-header">✅ Bilans</div>
-            <div class="stat-val" style="color:var(--sheet-green)">{{ bilans|floatformat:2 }} zł</div>
-        </div>
+        <div class="card"><div class="section-header">💰 Przychody</div><div class="stat-val" style="color:var(--income-blue)">{{ suma_przychodow|floatformat:2 }} zł</div></div>
+        <div class="card"><div class="section-header">📉 Wydatki</div><div class="stat-val" style="color:var(--expense-red)">{{ suma_wydatkow|floatformat:2|cut:"-" }} zł</div></div>
+        <div class="card"><div class="section-header">✅ Bilans</div><div class="stat-val" style="color:var(--sheet-green)">{{ bilans|floatformat:2 }} zł</div></div>
     </div>
 
     <div class="card input-row">
-        <div class="section-header">➕ DODAJ NOWY WPIS DO ARKUSZA</div>
-        <form method="post" style="display:flex; height: 100%; padding: 0 15px; align-items: center; gap: 20px;">
+        <div class="section-header">➕ WPISZ WYDATEK</div>
+        <form method="post" style="display:flex; height: 100%; padding: 0 15px; align-items: center; gap: 15px;">
             {% csrf_token %}
             <table class="sheet-table" style="flex:1">
                 <thead>
                     <tr>
-                        <th style="width:140px">Data</th>
-                        <th>Nazwa wydatku</th>
-                        <th style="width:120px">Kwota (zł)</th>
-                        <th>Kategoria</th>
-                        <th>Osoba</th>
-                    </tr>
+                        <th style="width:130px">Data</th>
+                        <th style="width:200px">Nazwa wydatku</th>
+                        <th style="width:100px">Kwota</th>
+                        <th style="width:130px">Kategoria</th>
+                        <th style="width:120px">Osoba</th>
+                        <th style="width:120px">Informacje (dodatkowy opis)</th> </tr>
                 </thead>
                 <tbody>
                     <tr>
                         <td><input type="date" name="data_wydatku" class="input-field" value="{{ dzisiejsza_data }}"></td>
-                        <td><input type="text" name="nazwa" class="input-field" placeholder="Opis wpisu..." required></td>
-                        <td><input type="number" step="0.01" name="kwota" class="input-field" placeholder="0.00" required></td>
+                        <td><input type="text" name="nazwa" class="input-field" placeholder="np. Zakupy" required></td>
+                        <td><input type="number" step="0.01" name="kwota" class="input-field" placeholder="0.00" required onkeydown="return event.keyCode !== 69 && event.keyCode !== 89"></td>
                         <td>
                             <select name="kategoria" class="input-field" required>
                                 <option value="" disabled selected>Wybierz...</option>
@@ -140,12 +119,11 @@
                                 {% for user in uzytkownicy %}<option value="{{ user.id }}">{{ user.username }}</option>{% endfor %}
                             </select>
                         </td>
+                        <td><input type="text" name="notatki" class="input-field" placeholder="Dodaj szczegóły..."></td>
                     </tr>
                 </tbody>
             </table>
-            <div>
-                <button type="submit" class="btn-save">ZAPISZ WPIS</button>
-            </div>
+            <div><button type="submit" class="btn-save">ZAPISZ WPIS</button></div>
         </form>
     </div>
 
@@ -157,34 +135,29 @@
                     <tr><td>Przychody łączone</td><td style="text-align:right; color:var(--income-blue); font-weight:bold">+{{ suma_przychodow|floatformat:2 }}</td></tr>
                     <tr><td>Suma wydatków stałych</td><td class="val-black">-{{ suma_stale|floatformat:2|cut:"-" }}</td></tr>
                     <tr><td>Suma wydatków zmiennych</td><td class="val-black">-{{ suma_zmienne|floatformat:2|cut:"-" }}</td></tr>
-                    <tr style="background:var(--light-green); font-weight:bold; font-size: 13px;">
-                        <td>DO DYSPOZYCJI</td><td style="text-align:right">{{ bilans|floatformat:2 }} zł</td>
-                    </tr>
                 </table>
             </div>
         </div>
-
         <div class="card">
             <div class="section-header">🛒 Wydatki zmienne</div>
             <div class="scroll-area">
                 <table class="data-table">
                     {% for w in wydatki_zmienne %}
                     <tr>
-                        <td>{{ w.nazwa }}<br><small style="color:#888">{{ w.data_wydatku|date:"d.m" }}</small></td>
+                        <td>{{ w.nazwa }}<br><small style="color:#888">{{ w.data_wydatku|date:"d.m" }} {% if w.notatki %}| {{ w.notatki }}{% endif %}</small></td>
                         <td class="val-black">-{{ w.kwota|floatformat:2|cut:"-" }}</td>
                     </tr>
                     {% endfor %}
                 </table>
             </div>
         </div>
-
         <div class="card">
             <div class="section-header">📑 Rachunki stałe</div>
             <div class="scroll-area">
                 <table class="data-table">
                     {% for w in wydatki_stale %}
                     <tr>
-                        <td>{{ w.nazwa }}<br><small style="color:#888">{{ w.data_wydatku|date:"d.m" }}</small></td>
+                        <td>{{ w.nazwa }}<br><small style="color:#888">{{ w.data_wydatku|date:"d.m" }} {% if w.notatki %}| {{ w.notatki }}{% endif %}</small></td>
                         <td class="val-black">-{{ w.kwota|floatformat:2|cut:"-" }}</td>
                     </tr>
                     {% endfor %}
@@ -202,28 +175,14 @@
     <script>
         const clean = (val) => Math.abs(parseFloat(val.toString().replace(',', '.')) || 0);
         const opt = { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } };
-
         new Chart(document.getElementById('barChart'), {
             type: 'bar',
-            data: { 
-                labels: ['Wpływy', 'Stałe', 'Zmienne'], 
-                datasets: [{ 
-                    data: [clean("{{ suma_przychodow }}"), clean("{{ suma_stale }}"), clean("{{ suma_zmienne }}")], 
-                    backgroundColor: ['#185abc', '#5f6368', '#f9ab00'] 
-                }] 
-            },
+            data: { labels: ['Wpływy', 'Stałe', 'Zmienne'], datasets: [{ data: [clean("{{ suma_przychodow }}"), clean("{{ suma_stale }}"), clean("{{ suma_zmienne }}")], backgroundColor: ['#185abc', '#5f6368', '#f9ab00'] }] },
             options: opt
         });
-
         new Chart(document.getElementById('pieChart'), {
             type: 'doughnut',
-            data: { 
-                labels: ['Stałe', 'Zmienne'], 
-                datasets: [{ 
-                    data: [clean("{{ suma_stale }}"), clean("{{ suma_zmienne }}")], 
-                    backgroundColor: ['#5f6368', '#f9ab00'] 
-                }] 
-            },
+            data: { labels: ['Stałe', 'Zmienne'], datasets: [{ data: [clean("{{ suma_stale }}"), clean("{{ suma_zmienne }}")], backgroundColor: ['#5f6368', '#f9ab00'] }] },
             options: { ...opt, plugins: { legend: { display: true, position: 'right' } } }
         });
     </script>
