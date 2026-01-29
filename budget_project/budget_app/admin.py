@@ -1,5 +1,5 @@
 from django.contrib import admin
-
+from .models import Wydatek
 from .models import Kategoria, Wydatek, Oszczednosci, Przychod
 
 
@@ -8,7 +8,7 @@ admin.site.register(Kategoria)
 
 @admin.register(Wydatek)
 class WydatekAdmin(admin.ModelAdmin):
-    list_display = ('uzytkownik', 'nazwa', 'kwota', 'kategoria', 'data_wydatku')
+    list_display = ('nazwa', 'kwota', 'data_wydatku', 'notatki')
     list_filter = ('uzytkownik', 'kategoria', 'data_wydatku')
     search_fields = ('nazwa',)
 
