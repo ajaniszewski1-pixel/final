@@ -1,0 +1,32 @@
+<h2>Lista Wydatków</h2>
+<table>
+    <thead>
+        <tr>
+            <th>Osoba</th>
+            <th>Nazwa</th>
+            <th>Kategoria</th>
+            <th>Kwota</th>
+            <th>Data</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for w in wydatki %}
+        <tr>
+            <td>{{ w.uzytkownik.username }}</td>
+            <td>{{ w.nazwa }}</td>
+            <td>{{ w.kategoria.nazwa }}</td>
+            <td style="color: green;">{{ w.kwota }} zł</td>
+            <td>{{ w.data_wydatku|date:"d.m.Y" }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<hr>
+
+<h2>Nasze Cele Oszczędnościowe</h2>
+<ul>
+    {% for o in oszczednosci %}
+    <li><strong>{{ o.uzytkownik.username }}</strong> odkłada na: {{ o.nazwa }} (Cel: {{ o.kwota_docelowa }} zł)</li>
+    {% endfor %}
+</ul>

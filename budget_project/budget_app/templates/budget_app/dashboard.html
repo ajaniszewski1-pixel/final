@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <title>Panel Budżetowy</title>
+    <style>
+        :root {
+            --bg-color: #f4f7f9;
+            --dark-blue: #1a237e;
+            --income-green: #4caf50;
+            --expense-pink: #e91e63;
+            --card-bg: #ffffff;
+        }
+
+        body { font-family: sans-serif; background: var(--bg-color); margin: 0; padding: 20px; }
+
+        /* Widgety na górze */
+        .top-row { display: flex; gap: 15px; margin-bottom: 20px; }
+        .widget { background: white; padding: 15px; flex: 1; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); text-align: center; }
+        .label { font-size: 11px; color: #666; font-weight: bold; text-transform: uppercase; }
+        .value { font-size: 20px; font-weight: bold; margin-top: 5px; }
+
+        /* Kontener główny */
+        .container { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        .card { background: white; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.05); margin-bottom: 20px; }
+        
+        .header { padding: 10px 15px; color: white; font-weight: bold; font-size: 14px; }
+        
+        table { width: 100%; border-collapse: collapse; }
+        td, th { padding: 12px; text-align: left; border-bottom: 1px solid #eee; font-size: 13px; }
+
+        /* Paski postępu w czystym CSS */
+        .progress-container { background: #eee; border-radius: 10px; height: 12px; width: 100%; margin-top: 5px; }
+        .progress-fill { height: 100%; border-radius: 10px; transition: width 0.5s; }
+
+        .btn { background: var(--dark-blue); color: white; border: none; padding: 10px; width: 100%; border-radius: 4px; cursor: pointer; }
+    </style>
+</head>
+<body>
+
+    <div class="top-row">
+        <div class="widget">
+            <div class="label">Przychody Razem</div>
+            <div class="value" style="color: var(--income-green);">+ {{ suma_przychodow }} zł</div>
+        </div>
+        <div class="widget">
+            <div class="label">Wydatki Razem</div>
+            <div class="value" style="color: var(--expense-pink);">- {{ suma_wydatkow }} zł</div>
+        </div>
+        <div class="widget">
+            <div class="label">Pozostało (Bilans)</div>
+            <div class="value" style="color: var(--dark-blue);">{{ bilans }} zł</div>
+        </div>
+    </div>
+
+    <div class="container">
+        <div>
+            <div class="card" style="padding: 15px;">
+                <h3 style="margin-top:0">➕ Dodaj Wydatek</h3>
+                <form method="post">
+                    {% csrf_token %}
+                    {{ form.as_p }}
+                    <button type="submit" class="btn">Zapisz wydatek</button>
+                </form>
+            </div>
+
+            <div class="card">
+                <div class="header" style="background: var(--income-green);">Lista Przychodów</div>
+                <table>
+                    {% for p in przychody %}
+                    <tr>
+                        <td>{{ p.nazwa }}</td>
+                        <td style="text-align:right; font-weight:bold;">{{ p.kwota }} zł</td>
+                    </tr>
+                    {% endfor %}
+                </table>
+            </div>
+        </div>
+
+        <div>
+            <div class="card" style="padding: 20px;">
+                <div class="label">Wykorzystanie Budżetu ({{ procent_wydatkow }}%)</div>
+                <div class="progress-container">
+                    <div class="progress-fill" style="width: {{ procent_wydatkow }}%; background: var(--expense-pink);"></div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="header" style="background: var(--expense-pink);">Ostatnie Wydatki</div>
+                <table>
+                    {% for w in wydatki %}
+                    <tr>
+                        <td>{{ w.nazwa }} ({{ w.uzytkownik.username }})</td>
+                        <td style="text-align:right; font-weight:bold;">{{ w.kwota }} zł</td>
+                    </tr>
+                    {% endfor %}
+                </table>
+            </div>
+        </div>
+    </div>
+
+</body>
+
+</html>
