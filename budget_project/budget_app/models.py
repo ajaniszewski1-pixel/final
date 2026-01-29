@@ -3,9 +3,12 @@ from django.utils import timezone
 from django.contrib.auth.models import User
 
 class Kategoria(models.Model):
-    TYPY = [('stale', 'Stałe'), ('zmienne', 'Zmienne')]
+    TYPY = [
+        ('staly', 'Wydatek stały'),
+        ('zmienny', 'Wydatek zmienny'),
+    ]
     nazwa = models.CharField(max_length=100)
-    typ = models.CharField(max_length=10, choices=TYPY, default='zmienne')
+    typ = models.CharField(max_length=10, choices=TYPY, default='zmienny')
 
     def __str__(self):
         return f"{self.nazwa} ({self.get_typ_display()})"
@@ -47,3 +50,6 @@ class Przychod(models.Model):
 
     class Meta:
         verbose_name_plural = "Przychody"
+
+
+    
