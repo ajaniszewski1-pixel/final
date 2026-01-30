@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect, get_object_ didn't_match_any_of_these_
+from django.shortcuts import render, redirect, get_object_or_404
 from django.db.models import Sum, Q
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
@@ -45,7 +45,9 @@ def dashboard(request):
             Q(uzytkownik=request.user) | Q(uzytkownik__username='Wszyscy')
         ).order_by('-data_wydatku')
         
-        oszczednosci = Oszczednosci.objects.filter(uzytkownik=request.user)
+        oszczednosci = Oszczednosci.objects.filter(
+            Q(uzytkownik=request.user) | Q(uzytkownik__username='Wszyscy')
+        )
         przychody = Przychod.objects.filter(uzytkownik=request.user)
 
     kategorie = Kategoria.objects.all()

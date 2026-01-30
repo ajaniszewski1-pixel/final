@@ -2,7 +2,7 @@
 <html lang="pl">
 <head>
     <meta charset="UTF-8">
-    <title>Planer Budżetu - Django</title>
+    <title>Planer Budżetu - Dashboard</title>
     <style>
         :root {
             --sheet-green: #13734e;
@@ -16,133 +16,147 @@
 
         html, body {
             height: 100vh; margin: 0; padding: 0;
-            overflow: hidden; font-family: 'Segoe UI', sans-serif;
+            overflow: hidden; font-family: 'Segoe UI', Arial, sans-serif;
             background-color: #f8f9fa; color: var(--text-dark);
         }
 
-        body { display: flex; flex-direction: column; padding: 10px; gap: 12px; box-sizing: border-box; }
+        body { display: flex; flex-direction: column; padding: 12px; gap: 12px; box-sizing: border-box; }
 
         .card {
             background: white; border: 1px solid var(--border-color);
             border-radius: 4px; display: flex; flex-direction: column;
-            overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            overflow: hidden; box-shadow: 0 1px 2px rgba(0,0,0,0.1);
         }
 
         .section-header {
             background-color: var(--sheet-green); color: white;
-            padding: 6px; font-weight: bold; text-align: center;
-            font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px;
+            padding: 8px; font-weight: bold; text-align: center;
+            font-size: 13px; text-transform: uppercase; letter-spacing: 1px;
         }
 
-        .top-row { display: grid; grid-template-columns: 180px 1fr 1fr 1fr; gap: 12px; height: 85px; flex-shrink: 0; }
-        .budget-table { width: 100%; height: 100%; border-collapse: collapse; font-size: 11px; }
-        .budget-table td { border: 1px solid var(--border-color); padding: 2px 6px; }
-        .stat-val { display: flex; align-items: center; justify-content: center; height: 100%; font-size: 22px; font-weight: bold; }
-
-        .btn-logout-table {
-            width: 100%; height: 35px; background: var(--expense-red); 
-            color: white; border: none; cursor: pointer; font-weight: bold; 
-            font-size: 11px; text-transform: uppercase; display: flex;
-            align-items: center; justify-content: center;
-        }
-
-        .input-row { height: 115px; flex-shrink: 0; border: 1px solid var(--sheet-green); }
-        .sheet-table { width: 100%; border-collapse: collapse; font-size: 13px; table-layout: fixed; }
-        .sheet-table th { background: var(--light-green); border: 1px solid var(--border-color); padding: 5px; color: var(--sheet-green); font-size: 10px; text-transform: uppercase; }
-        .input-field { width: 100%; border: none; padding: 10px 5px; font-size: 13px; background: transparent; outline: none; font-weight: 500; text-align: center; }
+        /* Top Row Statystyki */
+        .top-row { display: grid; grid-template-columns: 180px 1fr 1fr 1fr; gap: 12px; height: 95px; flex-shrink: 0; }
+        .stat-val { display: flex; align-items: center; justify-content: center; height: 100%; font-size: 24px; font-weight: bold; }
         
+        /* Naprawiony przycisk wyloguj */
+        .profile-container { display: flex; flex-direction: column; justify-content: space-between; height: 100%; padding-bottom: 5px; }
+        .user-name { text-align: center; padding: 5px; font-weight: bold; font-size: 14px; }
+        .btn-logout { 
+            width: 90%; margin: 0 auto; height: 32px; background: var(--expense-red); 
+            color: white; border: none; cursor: pointer; font-weight: bold; 
+            font-size: 11px; border-radius: 4px; display: block;
+        }
+
+        /* Kafelki Akcji */
+        .action-selector { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; flex-shrink: 0; }
+        .action-card {
+            background: white; border: 1px solid var(--border-color);
+            border-radius: 4px; padding: 10px; text-align: center;
+            cursor: pointer; transition: 0.2s; font-weight: bold;
+            text-transform: uppercase; font-size: 11px; color: #5f6368;
+        }
+        .action-card.active { border: 2px solid var(--sheet-green); color: var(--sheet-green); background: var(--light-green); }
+
+        /* Formularz */
+        .input-row { height: auto; padding-bottom: 10px; flex-shrink: 0; border: 1px solid var(--sheet-green); }
+        .sheet-table { width: 100%; border-collapse: collapse; table-layout: fixed; }
+        .sheet-table th { 
+            background: var(--light-green); border: 1px solid var(--border-color); 
+            padding: 8px; color: var(--sheet-green); font-size: 11px; text-transform: uppercase;
+        }
+        .input-field { 
+            width: 100%; border: none; padding: 12px 8px; font-size: 13px; 
+            outline: none; text-align: center; color: #3c4043; background: transparent;
+        }
         .btn-save { 
             background: var(--sheet-green); color: white; border: none; 
-            padding: 10px 20px; cursor: pointer; border-radius: 4px; 
-            font-weight: bold; font-size: 13px;
+            padding: 10px 30px; cursor: pointer; border-radius: 4px; 
+            font-weight: bold; font-size: 14px; margin-right: 15px;
         }
 
+        /* Tabele Danych */
         .middle-row { display: grid; grid-template-columns: 1fr 1.1fr 1.1fr 1fr; gap: 12px; flex: 1; min-height: 0; }
         .scroll-area { overflow-y: auto; height: 100%; }
-        .data-table { width: 100%; border-collapse: collapse; font-size: 12px; table-layout: fixed; }
-        .data-table tr:hover { background-color: #f1f3f4; } /* Podświetlenie wiersza */
-        .data-table td { border-bottom: 1px solid var(--border-color); padding: 8px; vertical-align: top; }
-        .val-black { text-align: right; font-weight: 600; color: var(--text-dark); white-space: nowrap; }
-        .desc-text { color: #666; font-size: 10px; margin-top: 2px; display: block; }
+        .data-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+        .data-table td { border-bottom: 1px solid var(--border-color); padding: 10px 8px; }
+        .val-black { text-align: right; font-weight: 600; }
+        .desc-text { color: #70757a; font-size: 10px; }
 
-        /* LOGIKA UKRYWANIA PRZYCISKU */
-        .btn-delete-container { opacity: 0; transition: opacity 0.2s; margin: 0; }
-        .data-table tr:hover .btn-delete-container { opacity: 1; }
+        .delete-wrapper { display: none; }
+        .data-table tr:hover .delete-wrapper { display: inline; }
+        .btn-del { background: none; border: none; color: var(--expense-red); cursor: pointer; font-size: 10px; font-weight: bold; }
 
-        .btn-delete-text {
-            background: none; border: none; color: var(--expense-red); 
-            font-size: 9px; cursor: pointer; padding: 0; 
-            text-decoration: underline; text-transform: uppercase; font-weight: bold;
-        }
-
-        .charts-row { display: grid; grid-template-columns: 1.5fr 1fr; gap: 12px; height: 170px; flex-shrink: 0; }
+        /* Wykresy */
+        .charts-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; height: 250px; flex-shrink: 0; }
     </style>
 </head>
 <body>
 
     <div class="top-row">
         <div class="card">
-            <div class="section-header">Panel sterowania</div>
-            <table class="budget-table">
-                <tr>
-                    <td style="background:var(--light-green); width: 40%; font-size: 10px;">Użytkownik</td>
-                    <td style="text-align:center; font-weight:bold; font-size: 13px;">{{ user.username }}</td>
-                </tr>
-                <tr>
-                    <td colspan="2" style="padding: 0;">
-                        <form action="{% url 'logout' %}" method="post" style="margin: 0;">
-                            {% csrf_token %}
-                            <button type="submit" class="btn-logout-table">WYLOGUJ SIĘ</button>
-                        </form>
-                    </td>
-                </tr>
-            </table>
+            <div class="section-header">Profil</div>
+            <div class="profile-container">
+                <div class="user-name">{{ user.username }}</div>
+                <form action="{% url 'logout' %}" method="post" style="margin: 0;">
+                    {% csrf_token %}
+                    <button type="submit" class="btn-logout">WYLOGUJ</button>
+                </form>
+            </div>
         </div>
         <div class="card"><div class="section-header">Przychody</div><div class="stat-val" style="color:var(--income-blue)">{{ suma_przychodow|floatformat:2 }} zł</div></div>
         <div class="card"><div class="section-header">Wydatki</div><div class="stat-val" style="color:var(--expense-red)">{{ suma_wydatkow|floatformat:2|cut:"-" }} zł</div></div>
         <div class="card"><div class="section-header">Bilans</div><div class="stat-val" style="color:var(--sheet-green)">{{ bilans|floatformat:2 }} zł</div></div>
     </div>
 
+    <div class="action-selector">
+        <div class="action-card active" onclick="selectType('wydatek', this)">Wydatek</div>
+        <div class="action-card" onclick="selectType('przychod', this)">Przychód</div>
+        <div class="action-card" onclick="selectType('cel', this)">Cel Oszczędnościowy</div>
+    </div>
+
     <div class="card input-row">
-        <div class="section-header">Dodaj nowy wydatek</div>
-        <form method="post" style="display:flex; height: 100%; padding: 0 15px; align-items: center; gap: 15px;">
+        <div class="section-header" id="form-title">DODAJ NOWY WYDATEK</div>
+        <form method="post" style="display:flex; align-items: center; gap: 10px; padding-top: 5px;">
             {% csrf_token %}
-            <table class="sheet-table" style="flex:1">
+            <input type="hidden" name="typ_wpisu" id="typ_wpisu_val" value="wydatek">
+            
+            <table class="sheet-table">
                 <thead>
                     <tr>
-                        <th style="width:130px">Data</th>
-                        <th>Nazwa wydatku</th>
+                        <th style="width:140px">Data</th>
+                        <th style="width:200px">Nazwa</th>
                         <th style="width:100px">Kwota</th>
-                        <th style="width:130px">Kategoria</th>
-                        <th style="width:120px">Osoba</th>
+                        <th style="width:150px">Kategoria</th>
+                        <th style="width:150px">Osoba</th>
                         <th>Notatki</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr>
                         <td><input type="date" name="data_wydatku" class="input-field" value="{{ dzisiejsza_data }}"></td>
-                        <td><input type="text" name="nazwa" class="input-field" placeholder="np. Zakupy spożywcze" required></td>
+                        <td><input type="text" name="nazwa" id="input-nazwa" class="input-field" placeholder="np. Zakupy spożywcze" required></td>
                         <td><input type="number" step="0.01" name="kwota" class="input-field" placeholder="0.00" required></td>
                         <td>
-                            <select name="kategoria" class="input-field" required>
+                            <select name="kategoria" id="select-kategoria" class="input-field">
                                 <option value="" disabled selected>Wybierz...</option>
                                 {% for kat in kategorie %}<option value="{{ kat.id }}">{{ kat.nazwa }}</option>{% endfor %}
                             </select>
                         </td>
                         <td>
-                            <select name="uzytkownik" class="input-field" required>
-                                {% if user.is_superuser %}
+                            {% if user.is_superuser %}
+                                <select name="uzytkownik" class="input-field">
                                     {% for u in uzytkownicy %}<option value="{{ u.id }}" {% if u == user %}selected{% endif %}>{{ u.username }}</option>{% endfor %}
-                                {% else %}
-                                    <option value="{{ user.id }}">{{ user.username }}</option>
-                                {% endif %}
-                            </select>
+                                </select>
+                            {% else %}
+                                <div class="input-field" style="background:#f1f3f4; color:#70757a; line-height: 14px;">{{ user.username }}</div>
+                                <input type="hidden" name="uzytkownik" value="{{ user.id }}">
+                            {% endif %}
                         </td>
                         <td><input type="text" name="notatki" class="input-field" placeholder="Opcjonalny opis"></td>
                     </tr>
                 </tbody>
             </table>
-            <div><button type="submit" class="btn-save">ZAPISZ</button></div>
+            <button type="submit" class="btn-save">ZAPISZ</button>
         </form>
     </div>
 
@@ -151,10 +165,10 @@
             <div class="section-header">Podsumowanie</div>
             <div class="scroll-area">
                 <table class="data-table">
-                    <tr><td>Przychody łączone</td><td style="text-align:right; color:var(--income-blue); font-weight:bold">+{{ suma_przychodow|floatformat:2 }}</td></tr>
-                    <tr><td>Suma wydatków stałych</td><td class="val-black">-{{ suma_stale|floatformat:2|cut:"-" }}</td></tr>
-                    <tr><td>Suma wydatków zmiennych</td><td class="val-black">-{{ suma_zmienne|floatformat:2|cut:"-" }}</td></tr>
-                    <tr><td>Planowane oszczędności</td><td style="text-align:right; color:var(--savings-gold); font-weight:bold">{{ suma_oszczednosci|floatformat:2 }}</td></tr>
+                    <tr><td>Przychody</td><td style="text-align:right; color:var(--income-blue); font-weight:bold">+{{ suma_przychodow|floatformat:2 }}</td></tr>
+                    <tr><td>Stałe</td><td class="val-black">-{{ suma_stale|floatformat:2|cut:"-" }}</td></tr>
+                    <tr><td>Zmienne</td><td class="val-black">-{{ suma_zmienne|floatformat:2|cut:"-" }}</td></tr>
+                    <tr><td>Oszczędności</td><td style="text-align:right; color:var(--savings-gold); font-weight:bold">{{ suma_oszczednosci|floatformat:2 }}</td></tr>
                 </table>
             </div>
         </div>
@@ -165,20 +179,11 @@
                 <table class="data-table">
                     {% for w in wydatki_zmienne %}
                     <tr>
-                        <td>
-                            <div style="font-weight: 600;">{{ w.nazwa }}</div>
-                            <div class="desc-text">{{ w.data_wydatku|date:"d.m.Y" }} | {{ w.uzytkownik.username }}</div>
-                        </td>
-                        <td class="val-black">
-                            <div style="display: flex; flex-direction: column; align-items: flex-end;">
-                                <span>-{{ w.kwota|floatformat:2|cut:"-" }}</span>
-                                <div class="btn-delete-container">
-                                    <form action="{% url 'usun_wydatek' w.pk %}" method="post" onsubmit="return confirm('Usunąć?');" style="margin:0;">
-                                        {% csrf_token %}
-                                        <button type="submit" class="btn-delete-text">[usuń]</button>
-                                    </form>
-                                </div>
-                            </div>
+                        <td><strong>{{ w.nazwa }}</strong><br><span class="desc-text">{{ w.data_wydatku|date:"d.m" }} | {{ w.uzytkownik.username }}</span></td>
+                        <td class="val-black">-{{ w.kwota|floatformat:2|cut:"-" }}
+                            {% if w.uzytkownik == user or user.is_superuser %}
+                            <span class="delete-wrapper"><form action="{% url 'usun_wydatek' w.pk %}" method="post" style="display:inline;">{% csrf_token %}<button type="submit" class="btn-del">[usuń]</button></form></span>
+                            {% endif %}
                         </td>
                     </tr>
                     {% endfor %}
@@ -192,20 +197,11 @@
                 <table class="data-table">
                     {% for w in wydatki_stale %}
                     <tr>
-                        <td>
-                            <div style="font-weight: 600;">{{ w.nazwa }}</div>
-                            <div class="desc-text">{{ w.data_wydatku|date:"d.m.Y" }} | {{ w.uzytkownik.username }}</div>
-                        </td>
-                        <td class="val-black">
-                            <div style="display: flex; flex-direction: column; align-items: flex-end;">
-                                <span>-{{ w.kwota|floatformat:2|cut:"-" }}</span>
-                                <div class="btn-delete-container">
-                                    <form action="{% url 'usun_wydatek' w.pk %}" method="post" onsubmit="return confirm('Usunąć?');" style="margin:0;">
-                                        {% csrf_token %}
-                                        <button type="submit" class="btn-delete-text">[usuń]</button>
-                                    </form>
-                                </div>
-                            </div>
+                        <td><strong>{{ w.nazwa }}</strong><br><span class="desc-text">{{ w.data_wydatku|date:"d.m" }} | {{ w.uzytkownik.username }}</span></td>
+                        <td class="val-black">-{{ w.kwota|floatformat:2|cut:"-" }}
+                            {% if w.uzytkownik == user or user.is_superuser %}
+                            <span class="delete-wrapper"><form action="{% url 'usun_wydatek' w.pk %}" method="post" style="display:inline;">{% csrf_token %}<button type="submit" class="btn-del">[usuń]</button></form></span>
+                            {% endif %}
                         </td>
                     </tr>
                     {% endfor %}
@@ -219,10 +215,7 @@
                 <table class="data-table">
                     {% for o in oszczednosci %}
                     <tr>
-                        <td>
-                            <div style="font-weight: 600;">{{ o.nazwa }}</div>
-                            <div class="desc-text">Dla: {{ o.uzytkownik.username }}</div>
-                        </td>
+                        <td><strong>{{ o.nazwa }}</strong><br><span class="desc-text">Dla: {{ o.uzytkownik.username }}</span></td>
                         <td style="text-align:right; font-weight:bold; color:var(--savings-gold)">{{ o.kwota_docelowa|floatformat:2 }}</td>
                     </tr>
                     {% endfor %}
@@ -232,38 +225,88 @@
     </div>
 
     <div class="charts-row">
-        <div class="card" style="padding:5px"><canvas id="barChart"></canvas></div>
-        <div class="card" style="padding:5px"><canvas id="pieChart"></canvas></div>
+        <div class="card" style="padding:10px;"><canvas id="barChart"></canvas></div>
+        <div class="card" style="padding:10px;"><canvas id="pieChart"></canvas></div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
-        const clean = (val) => Math.abs(parseFloat(val.toString().replace(',', '.')) || 0);
-        const opt = { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } };
-        
-        new Chart(document.getElementById('barChart'), {
+        function selectType(type, element) {
+            document.querySelectorAll('.action-card').forEach(c => c.classList.remove('active'));
+            element.classList.add('active');
+            document.getElementById('typ_wpisu_val').value = type;
+            
+            const title = document.getElementById('form-title');
+            const inputNazwa = document.getElementById('input-nazwa');
+            const selectKat = document.getElementById('select-kategoria');
+
+            if (type === 'wydatek') {
+                title.innerText = "DODAJ NOWY WYDATEK";
+                inputNazwa.placeholder = "np. Zakupy spożywcze";
+                selectKat.disabled = false;
+                selectKat.style.background = "transparent";
+            } else if (type === 'przychod') {
+                title.innerText = "DODAJ NOWY PRZYCHÓD";
+                inputNazwa.placeholder = "np. Wypłata, Premia";
+                selectKat.disabled = true;
+                selectKat.style.background = "#f1f3f4";
+            } else {
+                title.innerText = "DODAJ NOWY CEL OSZCZĘDNOŚCIOWY";
+                inputNazwa.placeholder = "np. Wakacje, Samochód";
+                selectKat.disabled = true;
+                selectKat.style.background = "#f1f3f4";
+            }
+        }
+
+        const colors = ['#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF', '#FF9F40', '#8AC926', '#1982C4'];
+
+        async function refreshCharts() {
+            try {
+                const [sR, tR] = await Promise.all([fetch('/budget/api/budget/summary/'), fetch('/budget/api/budget/trends/')]);
+                const s = await sR.json(); const t = await tR.json();
+
+                // Usunięto Bilans z wykresu słupkowego
+                barChart.data.datasets[0].data = [s.suma_przychodow, s.suma_wydatkow];
+                barChart.update();
+
+                if (t.length > 0) {
+                    pieChart.data.labels = t.map(x => x.kategoria);
+                    pieChart.data.datasets[0].data = t.map(x => x.kwota);
+                    pieChart.data.datasets[0].backgroundColor = colors;
+                    pieChart.update();
+                }
+            } catch (e) { console.log(e); }
+        }
+
+        const barChart = new Chart(document.getElementById('barChart'), {
             type: 'bar',
             data: { 
-                labels: ['Wpływy', 'Stałe', 'Zmienne', 'Oszczędności'], 
+                labels: ['Przychody', 'Wydatki'], 
                 datasets: [{ 
-                    data: [clean("{{ suma_przychodow }}"), clean("{{ suma_stale }}"), clean("{{ suma_zmienne }}"), clean("{{ suma_oszczednosci }}")], 
-                    backgroundColor: ['#185abc', '#5f6368', '#d93025', '#f9ab00'] 
+                    data: [0,0], 
+                    backgroundColor: ['#185abc', '#d93025'] 
                 }] 
             },
-            options: opt
+            options: { 
+                responsive: true, 
+                maintainAspectRatio: false, 
+                plugins: { legend: { display: false } },
+                scales: { y: { beginAtZero: true } }
+            }
         });
 
-        new Chart(document.getElementById('pieChart'), {
+        const pieChart = new Chart(document.getElementById('pieChart'), {
             type: 'doughnut',
-            data: { 
-                labels: ['Stałe', 'Zmienne', 'Oszczędności'], 
-                datasets: [{ 
-                    data: [clean("{{ suma_stale }}"), clean("{{ suma_zmienne }}"), clean("{{ suma_oszczednosci }}")], 
-                    backgroundColor: ['#5f6368', '#d93025', '#f9ab00'] 
-                }] 
-            },
-            options: { ...opt, plugins: { legend: { display: true, position: 'right' } } }
+            data: { labels: ['...'], datasets: [{ data: [1], backgroundColor: ['#eee'] }] },
+            options: { 
+                responsive: true, 
+                maintainAspectRatio: false, 
+                cutout: '55%',
+                plugins: { legend: { position: 'right', labels: { boxWidth: 12, font: { size: 11 } } } }
+            }
         });
+
+        refreshCharts();
     </script>
 </body>
 </html>
